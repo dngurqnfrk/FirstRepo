@@ -7,8 +7,9 @@ public class Main {
 
         FP_Growth csv = new FP_Growth();
 
-        csv.Read_CSV(filePath);
+        csv.Read_CSV(filePath, MSV);
 
+        csv.Print_HashMap(); // Erase
 
     }
 }
