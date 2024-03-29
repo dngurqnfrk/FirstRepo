@@ -1,17 +1,12 @@
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.HashMap;
-import java.io.File;
-import java.io.FileReader;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.Iterator;
 
 public class FP_Growth {
     private final HashMap<String, Integer> FreqList;
     private int objectNumber;
     private float threshold;
 
-    public void Read_CSV(String filePath, float MSV) {
+    public void Read_CSV(String filePath) {
         CSV file = new CSV(filePath);
         objectNumber = 0;
 
@@ -28,11 +23,13 @@ public class FP_Growth {
             objectNumber++;
         }
 
-        threshold = objectNumber * MSV;
+        threshold *= objectNumber;
 
-        for (String s : FreqList.keySet()) {
-            if(FreqList.get(s) <= threshold) {
-                FreqList.remove(s);
+        Iterator<String> iterator = FreqList.keySet().iterator();
+        while (iterator.hasNext()) {
+            String s = iterator.next();
+            if (FreqList.get(s) <= threshold) {
+                iterator.remove();
             }
         }
     }
@@ -50,7 +47,8 @@ public class FP_Growth {
     }
 
     // Constructor
-    FP_Growth() {
+    FP_Growth(float MSV) {
         FreqList = new HashMap<>();
+        threshold = MSV;
     }
 }

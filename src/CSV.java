@@ -1,7 +1,7 @@
 import java.io.*;
 
 public class CSV {
-    private BufferedReader br;
+    final private BufferedReader br;
 
     CSV(String filePath) {
         File csv = new File(filePath);

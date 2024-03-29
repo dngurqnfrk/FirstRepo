@@ -5,9 +5,9 @@ public class Main {
         String filePath = args[0];
         float MSV = Float.parseFloat(args[1]);
 
-        FP_Growth csv = new FP_Growth();
+        FP_Growth csv = new FP_Growth(MSV);
 
-        csv.Read_CSV(filePath, MSV);
+        csv.Read_CSV(filePath);
 
         csv.Print_HashMap(); // Erase
 
