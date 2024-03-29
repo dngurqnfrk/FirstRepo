@@ -1,17 +1,19 @@
 import java.util.*;
 
 public class FP_Growth {
-    private final HashMap<String, Integer> FreqList;
-    String[] FP_List;
+    private HashMap<String, Integer> FreqList;
+    private HashMap<String, Node> FP_List;
     private int objectNumber;
     private float threshold;
+    final private CSV file;
+    private FP_Tree root;
 
 
-    public void Construct_FPList(String filePath) {
-        CSV file = new CSV(filePath);
+    // Construct FP List
+    public void Construct_FPList() {
         objectNumber = 0;
 
-        String buf = "";
+        String buf;
 
         while((buf = file.readLine()) != null) {
             String[] goods = buf.split(",");
@@ -35,7 +37,21 @@ public class FP_Growth {
             }
         });
 
-        FP_List = keyList.toArray( new String[0]);
+        for (String s : keyList) { FP_List.put(s, null); }
+    }
+
+    public void Construct_FPTree(String filePath) {
+        String buf;
+        while((buf = file.readLine()) != null) {
+            HashSet<String> goods = new HashSet<>(List.of(buf.split(",")));
+            List<String> lsFreq = new ArrayList<>();
+            for (String s : FP_List.keySet()) {
+                if(goods.contains(s)) {
+                    lsFreq.add(s);
+                }
+            }
+            root.InsertNode(lsFreq, FP_List);
+        }
     }
 
     //Just for debugging
@@ -49,11 +65,12 @@ public class FP_Growth {
 
         System.out.printf("\nThe number of Object is %d\n\n", objectNumber);
         System.out.println("FP List is below");
-        System.out.println(Arrays.toString(FP_List));
+        System.out.println(Arrays.toString(FP_List.keySet().toArray()));
     }
 
     // Constructor
-    FP_Growth(float MSV) {
+    FP_Growth(String filePath, float MSV) {
+        file = new CSV(filePath);
         FreqList = new HashMap<>();
         threshold = MSV;
     }
