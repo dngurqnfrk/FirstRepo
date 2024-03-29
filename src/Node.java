@@ -6,6 +6,8 @@ public class Node {
     private Node next;
 
 
+
+
     // Constructor
     Node() {
         leftChild = null;
@@ -24,9 +26,7 @@ public class Node {
         rightSibling = right;
     }
 
-    void SetProduct(String s) {
-        product = s;
-    }
+    void SetProduct(String s) { product = s; }
 
     void SetCount(Integer d) {
         count = d;
