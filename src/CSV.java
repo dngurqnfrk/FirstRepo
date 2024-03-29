@@ -1,13 +1,22 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 
 public class CSV {
-    BufferedReader br;
-    File csv;
+    private BufferedReader br;
 
-    Read_CSV(String filePath) {
-        csv = new File(filePath);
-        br = new BufferedReader(new FileReader(csv));
+    CSV(String filePath) {
+        File csv = new File(filePath);
+        try {
+            br = new BufferedReader(new FileReader(csv));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String readLine() {
+        try {
+            return br.readLine();
+        } catch (IOException e) {
+        throw new RuntimeException(e);
+        }
     }
 }

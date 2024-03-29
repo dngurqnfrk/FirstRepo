@@ -7,5 +7,8 @@ public class Main {
 
         FP_Growth csv = new FP_Growth();
 
+        csv.Read_CSV(filePath);
+
+
     }
 }
