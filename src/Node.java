@@ -1,9 +1,7 @@
-import java.util.List;
-
 public class Node {
     private Node leftChild;
     private Node rightSibling;
-    private String product;
+    private final String product;
     private Integer count;
     private Node next;
 
@@ -49,7 +47,6 @@ public class Node {
     Node GetLeftChild() { return leftChild; }
     void SetRightSibling(Node rs) { rightSibling = rs; }
     Node GetRightSibling() { return rightSibling; }
-    void SetProduct(String s) { product = s; }
     String GetProduct() { return product; }
     void SetCount(Integer d) {
         count = d;

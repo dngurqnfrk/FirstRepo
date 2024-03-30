@@ -1,8 +1,7 @@
-import java.text.Normalizer;
 import java.util.*;
 
 public class FP_Growth {
-    private HashMap<String, Integer> FreqList; // result table(HashMap)
+    private final HashMap<String, Integer> FreqList; // result table(HashMap)
     private List<String> FP_List;
     private int objectNumber;
     private float threshold;
@@ -32,6 +31,7 @@ public class FP_Growth {
         FreqList.keySet().removeIf(s -> FreqList.get(s) <= threshold);
 
         FP_List = new ArrayList<>(FreqList.keySet());
+
         FP_List.sort(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
@@ -89,14 +89,11 @@ public class FP_Growth {
 
             HashMap<String, Integer> buf = new HashMap<>();
 
-            System.out.printf("root.GetChild().GetLeftchild() is %s : %d\n", root.GetChild().GetLeftChild().GetProduct(), root.GetChild().GetLeftChild().GetCount());
-
             // Construct Conditional Pattern Base
             FormCPB(s, "", root.GetChild().GetLeftChild(), buf);
 
             // Conditional Pattern Tree
             FP_Tree FPT = new FP_Tree();
-            System.out.println("FP_List of size() : " + FP_List.size()); // Erase
             FPT.Construct_HT(FP_List.size());
 
             // Construct conditional FP Tree
@@ -108,6 +105,8 @@ public class FP_Growth {
 
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
+
+            FPT.Print_FPTree();
 
             InsertFreqSet(s, "", FPT.GetChild().GetLeftChild());
         }
@@ -131,13 +130,14 @@ public class FP_Growth {
         if(now == null) return;
 
         if(Objects.equals(now.GetProduct(), aim) && !CPB.isEmpty()) {
-            CPBMap.put(CPB + "," + now.GetProduct(), now.GetCount());
+            CPBMap.put(CPB, now.GetCount());
             return;
         } else if(Objects.equals(now.GetProduct(), aim) && CPB.isEmpty()) {
             return;
         }
 
-        if(now.GetLeftChild() != null) FormCPB(aim, CPB + "," + now.GetProduct(), now.GetLeftChild(), CPBMap);
+        if(now.GetLeftChild() != null && !CPB.isEmpty()) FormCPB(aim, CPB + "," + now.GetProduct(), now.GetLeftChild(), CPBMap);
+        else if(now.GetLeftChild() != null && CPB.isEmpty()) FormCPB(aim, now.GetProduct(), now.GetLeftChild(), CPBMap);
 
         if(now.GetRightSibling() != null) FormCPB(aim, CPB, now.GetRightSibling(), CPBMap);
     }
@@ -146,12 +146,14 @@ public class FP_Growth {
     public void InsertFreqSet(String item, String pathSet, Node now) {
         if(now == null) return;
 
-        if(now.GetCount() > threshold) {
-            FreqList.put(pathSet + ", " + item, now.GetCount());
+        if(now.GetCount() >= threshold && !pathSet.isEmpty()) {
+            FreqList.put(pathSet + ", " + now.GetProduct() + ", " + item, now.GetCount());
+        } else if(now.GetCount() >= threshold && pathSet.isEmpty()) {
+            FreqList.put(now.GetProduct() + ", " + item, now.GetCount());
         }
 
         if(now.GetLeftChild() != null && !pathSet.isEmpty()) InsertFreqSet(item, pathSet + ", " + now.GetProduct(), now.GetLeftChild());
-        else if(now.GetLeftChild() != null && pathSet.isEmpty()) InsertFreqSet(item, now.GetProduct() + ", ", now.GetLeftChild());
+        else if(now.GetLeftChild() != null && pathSet.isEmpty()) InsertFreqSet(item, now.GetProduct(), now.GetLeftChild());
 
         if(now.GetRightSibling() != null) InsertFreqSet(item, pathSet, now.GetLeftChild());
     }

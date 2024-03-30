@@ -11,9 +11,14 @@ public class Main {
         //csv.Print_FPList(); // Erase
         csv.Construct_FPTree();
 
-        //csv.Print_FPList(); // Erase
-        //csv.Print_HashMap(); // Erase
-        //csv.Print_FPTree(); // Erase
+        System.out.println("Now the FPList will be started\n\n"); // Erase
+        csv.Print_FPList(); // Erase
+
+        System.out.println("Now the Print_HashMap will be started\n\n"); // Erase
+        csv.Print_HashMap(); // Erase
+
+        System.out.println("Now the Print_FPTree will be started\n\n"); // Erase
+        csv.Print_FPTree(); // Erase
 
         csv.MineFPTree();
 
