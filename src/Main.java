@@ -8,10 +8,12 @@ public class Main {
         FP_Growth csv = new FP_Growth(filePath, MSV);
 
         csv.Construct_FPList();
+        //csv.Print_FPList(); // Erase
         csv.Construct_FPTree();
 
-        csv.Print_HashMap(); // Erase
-        csv.Print_FPTree();
         csv.Print_FPList(); // Erase
+        //csv.Print_HashMap(); // Erase
+        //csv.Print_FPTree(); // Erase
+        //csv.CheckFormCPB(); // Erase
     }
 }
