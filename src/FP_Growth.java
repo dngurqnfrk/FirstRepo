@@ -7,6 +7,7 @@ public class FP_Growth {
     private float threshold;
     final private CSV file;
     private FP_Tree root;
+    private String filePath;
 
 
     // Construct FP List
@@ -37,10 +38,13 @@ public class FP_Growth {
             }
         });
 
+        FP_List = new HashMap<>();
         for (String s : keyList) { FP_List.put(s, null); }
+
+        file.Reload(filePath);
     }
 
-    public void Construct_FPTree(String filePath) {
+    public void Construct_FPTree() {
         String buf;
         while((buf = file.readLine()) != null) {
             HashSet<String> goods = new HashSet<>(List.of(buf.split(",")));
@@ -50,8 +54,14 @@ public class FP_Growth {
                     lsFreq.add(s);
                 }
             }
-            root.InsertNode(lsFreq, FP_List);
+            if(lsFreq.size() > 0)
+                root.InsertNode(lsFreq, FP_List);
         }
+    }
+
+    // Just for debugging
+    public void Print_FPTree() {
+        root.GetChild().PrintNode(root.GetChild(), 0);
     }
 
     //Just for debugging
@@ -69,7 +79,9 @@ public class FP_Growth {
     }
 
     // Constructor
-    FP_Growth(String filePath, float MSV) {
+    FP_Growth(String _filePath, float MSV) {
+        root = new FP_Tree();
+        filePath = _filePath;
         file = new CSV(filePath);
         FreqList = new HashMap<>();
         threshold = MSV;

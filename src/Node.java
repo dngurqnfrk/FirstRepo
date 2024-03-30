@@ -1,24 +1,43 @@
 import java.util.List;
 
 public class Node {
-    private List<Node> child;
+    private Node leftChild;
+    private Node rightSibling;
     private String product;
     private Integer count;
     private Node next;
 
 
+    public void PrintNode(Node node, int depth) {
+        if(node == null)
+            return;
+
+        for (int i = 0; i < depth; i++) {
+            System.out.print("--");
+        }
+
+        System.out.printf("%d : [%s] - %d\n", depth, node.product, node.count);
+
+        if(node.leftChild != null)
+            PrintNode(node.leftChild, depth+1);
+
+        if(node.rightSibling != null)
+            PrintNode(node.rightSibling, depth);
+    }
 
 
     // Constructor
     Node() {
-        child = null;
+        leftChild = null;
+        rightSibling = null;
         product = null;
         count = 0;
         next = null;
     }
 
     Node(String p) {
-        child = null;
+        leftChild = null;
+        rightSibling = null;
         product = p;
         count = 1;
         next = null;
@@ -26,8 +45,10 @@ public class Node {
 
 
     // basic method
-    void SetChild(List<Node> c) { child = c; }
-    List<Node> GetLeftChild() { return child; }
+    void SetLeftChild(Node lc) { leftChild = lc; }
+    Node GetLeftChild() { return leftChild; }
+    void SetRightSibling(Node rs) { rightSibling = rs; }
+    Node GetRightSibling() { return rightSibling; }
     void SetProduct(String s) { product = s; }
     String GetProduct() { return product; }
     void SetCount(Integer d) {
