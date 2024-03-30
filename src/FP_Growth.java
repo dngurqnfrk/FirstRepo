@@ -2,7 +2,7 @@ import java.text.Normalizer;
 import java.util.*;
 
 public class FP_Growth {
-    private HashMap<String, Integer> FreqList;
+    private HashMap<String, Integer> FreqList; // result table(HashMap)
     private List<String> FP_List;
     private int objectNumber;
     private float threshold;
@@ -39,6 +39,8 @@ public class FP_Growth {
             }
         });
 
+        System.out.println(FreqList); // Erase
+
         System.out.println(FP_List); // Erase
 
         root.Construct_HT(FP_List.size());
@@ -62,7 +64,7 @@ public class FP_Growth {
               //  System.out.println(lsFreq); // Erase
 
             if(!lsFreq.isEmpty())
-                root.InsertNode(lsFreq, FP_List);
+                root.InsertNode(lsFreq, FP_List, 1);
 
             //System.out.println(i); // Erase
             //Print_FPTree(); // Erase
@@ -81,32 +83,90 @@ public class FP_Growth {
         }
     }
 
-    /* 나아아아중에 FPTree를 분석하는 코드를 하나에 넣을거임
-    public HashMap<String, Integer> MineFPTree() {
-        FormCPB("", root.GetChild());
-    }
-     */
-
-    public void CheckFormCPB() {
-        HashMap<String, Integer> buf = new HashMap<>();
+    public void MineFPTree() {
         for (String s : FP_List) {
-            FormCPB(s, "", root.GetChild().GetLeftChild(), buf); //
+            System.out.println("For item : " + s); // Erase
 
+            HashMap<String, Integer> buf = new HashMap<>();
 
+            System.out.printf("root.GetChild().GetLeftchild() is %s : %d\n", root.GetChild().GetLeftChild().GetProduct(), root.GetChild().GetLeftChild().GetCount());
+
+            // Construct Conditional Pattern Base
+            FormCPB(s, "", root.GetChild().GetLeftChild(), buf);
+
+            // Conditional Pattern Tree
+            FP_Tree FPT = new FP_Tree();
+            System.out.println("FP_List of size() : " + FP_List.size()); // Erase
+            FPT.Construct_HT(FP_List.size());
+
+            // Construct conditional FP Tree
+            for (String bufs : buf.keySet()) {
+                List<String> Tbuf = new ArrayList<>(List.of(bufs.split(",")));
+                Tbuf.remove("");
+                System.out.printf("%s : %s\n", bufs, Tbuf);
+                Tbuf.sort(new FreqComparator(FP_List));
+
+                FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
+            }
+
+            InsertFreqSet(s, "", FPT.GetChild().GetLeftChild());
         }
     }
 
-    public void FormCPB(String aim, String CPB, Node now, HashMap<String, Integer> CPBMap ) {
+    // Just for debugging
+    public void CheckFormCPB() {
+        System.out.println("Threshold is " + threshold);
+        HashMap<String, Integer> buf = new HashMap<>();
+        for (String s : FP_List) {
+            FormCPB(s, "", root.GetChild().GetLeftChild(), buf);
+            System.out.println(buf);
+        }
+
+        for (String s : buf.keySet()) {
+            System.out.printf("%s\n-- %d", s, buf.get(s));
+        }
+    }
+
+    public void FormCPB(String aim, String CPB, Node now, HashMap<String, Integer> CPBMap) {
         if(now == null) return;
 
-        if(now.GetLeftChild() != null) FormCPB(aim, CPB + "," + now.GetProduct(), now.GetLeftChild(), CPBMap);
-
-        if(Objects.equals(now.GetProduct(), aim)) {
-            CPBMap.put(CPB, now.GetCount());
+        if(Objects.equals(now.GetProduct(), aim) && !CPB.isEmpty()) {
+            CPBMap.put(CPB + "," + now.GetProduct(), now.GetCount());
+            return;
+        } else if(Objects.equals(now.GetProduct(), aim) && CPB.isEmpty()) {
             return;
         }
 
+        if(now.GetLeftChild() != null) FormCPB(aim, CPB + "," + now.GetProduct(), now.GetLeftChild(), CPBMap);
+
         if(now.GetRightSibling() != null) FormCPB(aim, CPB, now.GetRightSibling(), CPBMap);
+    }
+
+    // Insert itemSet over the support count of threshold.
+    public void InsertFreqSet(String item, String pathSet, Node now) {
+        if(now == null) return;
+
+        if(now.GetCount() > threshold) {
+            FreqList.put(pathSet + ", " + item, now.GetCount());
+        }
+
+        if(now.GetLeftChild() != null && !pathSet.isEmpty()) InsertFreqSet(item, pathSet + ", " + now.GetProduct(), now.GetLeftChild());
+        else if(now.GetLeftChild() != null && pathSet.isEmpty()) InsertFreqSet(item, now.GetProduct() + ", ", now.GetLeftChild());
+
+        if(now.GetRightSibling() != null) InsertFreqSet(item, pathSet, now.GetLeftChild());
+    }
+
+    // Print all the Frequent itemSet and its support
+    public void Print_Support() {
+        PriorityQueue<Map.Entry<String, Integer>> bufPQ = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
+
+        bufPQ.addAll(FreqList.entrySet());
+
+        while(!bufPQ.isEmpty()) {
+            Map.Entry<String, Integer> buf = bufPQ.remove();
+
+            System.out.println(buf.getKey() + " " + (float)buf.getValue() / objectNumber);
+        }
     }
 
     // Just for debugging

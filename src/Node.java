@@ -35,11 +35,11 @@ public class Node {
         next = null;
     }
 
-    Node(String p) {
+    Node(String p, int n) {
         leftChild = null;
         rightSibling = null;
         product = p;
-        count = 1;
+        count = n;
         next = null;
     }
 

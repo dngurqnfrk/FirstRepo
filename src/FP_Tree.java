@@ -10,12 +10,12 @@ public class FP_Tree {
     private List<Node> HT;
 
     // HT = Header Table
-    public void InsertNode(List<String> lsFreq, List<String> cmptor) {
+    public void InsertNode(List<String> lsFreq, List<String> cmptor, int n) {
         Node parent = Child;
         Node now = Child.GetLeftChild();
         for (String s : lsFreq) {
             if (now == null) {
-                Node buf = new Node(s);
+                Node buf = new Node(s, n);
                 parent.SetLeftChild(buf);
                 AddHashTable(cmptor.indexOf(s), buf);
                 parent = buf;
@@ -23,7 +23,7 @@ public class FP_Tree {
             } else {
                 int freqNum = cmptor.indexOf(s);
                 if (freqNum < cmptor.indexOf(now.GetProduct())) { // 맨 처음 child의 위치에 삽입 (parent 관계도 수정해야함)
-                    Node buf = new Node(s);
+                    Node buf = new Node(s, n);
                     buf.SetRightSibling(now);
                     parent.SetLeftChild(buf);
                     AddHashTable(cmptor.indexOf(s), buf);
@@ -35,17 +35,17 @@ public class FP_Tree {
                     }
 
                     if (freqNum == cmptor.indexOf(now.GetProduct())) {
-                        now.SetCount(now.GetCount() + 1);
+                        now.SetCount(now.GetCount() + n);
                         parent = now;
                         now = parent.GetLeftChild();
                     } else if (now.GetRightSibling() == null) {
-                        Node buf = new Node(s);
+                        Node buf = new Node(s, n);
                         AddHashTable(cmptor.indexOf(s), buf);
                         now.SetRightSibling(buf);
                         parent = buf;
                         now = buf.GetLeftChild();
                     } else {
-                        Node buf = new Node(s);
+                        Node buf = new Node(s, n);
                         buf.SetRightSibling(now.GetRightSibling());
                         now.SetRightSibling(buf);
                         AddHashTable(cmptor.indexOf(s), buf);

@@ -11,9 +11,14 @@ public class Main {
         //csv.Print_FPList(); // Erase
         csv.Construct_FPTree();
 
-        csv.Print_FPList(); // Erase
+        //csv.Print_FPList(); // Erase
         //csv.Print_HashMap(); // Erase
         //csv.Print_FPTree(); // Erase
-        //csv.CheckFormCPB(); // Erase
+
+        csv.MineFPTree();
+
+        System.out.println("Now the Print_Support will be started\n\n"); // Erase
+
+        csv.Print_Support();
     }
 }
