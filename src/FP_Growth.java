@@ -6,8 +6,8 @@ public class FP_Growth {
     private int objectNumber;
     private float threshold;
     final private CSV file;
-    private FP_Tree root;
-    private String filePath;
+    private final FP_Tree root;
+    private final String filePath;
 
 
     // Construct FP List
@@ -54,10 +54,35 @@ public class FP_Growth {
                     lsFreq.add(s);
                 }
             }
+
             if(lsFreq.size() > 0)
                 root.InsertNode(lsFreq, FP_List);
         }
     }
+
+    // Just for debugging
+    public void Print_FPList() {
+        int i = 0;
+        for (String s : FP_List.keySet()) {
+            System.out.printf("[%d] : %s\n", i, s);
+            Node now = FP_List.get(s);
+
+            while(now != null) {
+                System.out.printf("[%s] %d\n", now.GetProduct(), now.GetCount());
+                now = now.GetNext();
+            }
+            System.out.println("-----------\n\n");
+            i++;
+        }
+    }
+
+    /* 나아아아중에 FPTree를 분석하는 코드를 하나에 넣을거임
+    public HashMap<String, Integer> MineFPTree() {
+        FormCPB();
+    }
+     */
+
+
 
     // Just for debugging
     public void Print_FPTree() {

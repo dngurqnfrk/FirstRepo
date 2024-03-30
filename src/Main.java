@@ -11,7 +11,7 @@ public class Main {
         csv.Construct_FPTree();
 
         csv.Print_HashMap(); // Erase
-
-        csv.Print_FPTree(); // Erase
+        csv.Print_FPTree();
+        csv.Print_FPList(); // Erase
     }
 }
