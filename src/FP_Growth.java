@@ -2,15 +2,43 @@ import java.util.*;
 
 public class FP_Growth {
     private final HashMap<String, Integer> FreqList; // result table(HashMap)
-    private List<String> FP_List;
-    private int objectNumber;
-    private float threshold;
-    final private CSV file;
-    private final FP_Tree root;
-    private final String filePath;
+    // We memorize frequent itemSet in FreqList
+    private List<String> FP_List; // the Order of Frequent item
+    private int objectNumber; // the whole number of Object
+    private float threshold; // if itemset is frequent, support count must be over threshold
+    final private CSV file; // using CSV Class, we open groceries.csv file
+    private final FP_Tree root; // root node of FP_Tree, we use FP_Tree class
+    private final String filePath; // the filepath of groceries.csv
+
+    /*
+    Explanation of FP_Growth class' method
+
+    Construct_FPList() : scan csv file and count each product's support count.
+    based on that, method create Frequent order(FP_List) and put it on FP_List variable(List<String>)
+    the first step of FP-Growth Alg
+
+    Construct_FPTree() : scan csv file again and create FP_Tree based on FP_List.
+
+    Mine_FPTree() : by using FP_List and root(FP_Tree), mining the tree and get frequent itemSet.
+    in this method, using other 2 methods.
+    1. FormCPB(String, String, Node, HashMap<>) : by scanning FP_Tree, collect Prefix path(conditional pattern base) of aim item.
+    2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
+
+    Print_Support() : print FreqList in order. this method is for the assignment.
+
+    If you want to check the method's code, just find by Ctrl+f
+
+    Warning!!
+    There is error for constructing this Alg. In Mine_FPTree() method, I can't scan fully FP_Tree completely.
+    Example 1.
+    If conditional patter base is {f, a, b : 3} and {f, c, d : 2}, my code just add this pattern to new FP_Tree
+    and extract frequent item of tree's node. it's not the way that FP-Growth Alg do. my code is Garbage code! Plz fix it!
+     */
+
 
 
     // Construct FP List
+    // The first step of FP-Growth Alg
     public void Construct_FPList() {
         objectNumber = 0;
 
@@ -48,6 +76,7 @@ public class FP_Growth {
         file.Reload(filePath);
     }
 
+    // based on FP_List, scan csv file again to create FP_Tree
     public void Construct_FPTree() {
         String buf;
         //int i = 0; // Erase
@@ -83,6 +112,10 @@ public class FP_Growth {
         }
     }
 
+    // Mine FPTree and get the frequent itemsSet.
+    // In this method, using other 2 methods
+    // 1. FormCPB(String, String, Node, HashMap<>) : by scanning FP_Tree, collect Prefix path(conditional pattern base) of aim item.
+    // 2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
     public void MineFPTree() {
         for (String s : FP_List) {
             System.out.println("For item : " + s); // Erase
@@ -106,7 +139,7 @@ public class FP_Growth {
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
 
-            FPT.Print_FPTree();
+            FPT.Print_FPTree(); // Erase it
 
             InsertFreqSet(s, "", FPT.GetChild().GetLeftChild());
         }
@@ -125,6 +158,7 @@ public class FP_Growth {
             System.out.printf("%s\n-- %d", s, buf.get(s));
         }
     }
+
 
     public void FormCPB(String aim, String CPB, Node now, HashMap<String, Integer> CPBMap) {
         if(now == null) return;
