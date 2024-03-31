@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class FP_Tree {
     private Node Child;
-    private Node find;
+    private Node find; // I'm not sure that  I should use it
     private List<Node> HT;
 
     // HT = Header Table
@@ -81,7 +81,7 @@ public class FP_Tree {
     // Constructor
     FP_Tree() {
         Child = new Node();
-        find = null;
+        find = null; // Unused
         HT = null;
     }
 

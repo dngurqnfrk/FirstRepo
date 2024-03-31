@@ -11,7 +11,7 @@ public class FreqComparator implements Comparator<String> {
         if(i1 == i2)
             return 0;
         else
-            return i1 < i2 ? 1 : -1;
+            return i1 < i2 ? -1 : 1;
     }
 
     // Constructor

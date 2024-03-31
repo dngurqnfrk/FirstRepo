@@ -133,9 +133,15 @@ public class FP_Growth {
             for (String bufs : buf.keySet()) {
                 List<String> Tbuf = new ArrayList<>(List.of(bufs.split(",")));
                 Tbuf.remove("");
-                System.out.printf("%s : %s\n", bufs, Tbuf);
+                System.out.printf("%s : %s - %d\n", bufs, Tbuf, buf.get(bufs)); // Erase
                 Tbuf.sort(new FreqComparator(FP_List));
 
+                //For debugging
+                if(Objects.equals(s, "rolls/buns") && Tbuf.contains("other vegetables")) {
+                    System.out.println("rolls/buns : " + Tbuf);
+                    System.out.println(FP_List);
+                }
+                //For debugging
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
 
