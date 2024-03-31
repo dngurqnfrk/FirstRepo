@@ -3,7 +3,6 @@ import java.util.*;
 
 public class FP_Tree {
     private final Node Child;
-    private Node find; // I'm not sure that  I should use it
     private List<Node> HT;
     private final HashMap<String, Integer> itemMap;
 
@@ -99,7 +98,6 @@ public class FP_Tree {
     // Constructor
     FP_Tree() {
         Child = new Node();
-        find = null; // Unused
         HT = null;
         itemMap = new HashMap<>();
     }
