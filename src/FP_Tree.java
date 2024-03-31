@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.HashMap;
 
 
@@ -8,16 +9,20 @@ public class FP_Tree {
     private Node Child;
     private Node find; // I'm not sure that  I should use it
     private List<Node> HT;
+    private List<Integer> supportCount;
+    private TreeSet<String> itemSet;
 
     // HT = Header Table
     public void InsertNode(List<String> lsFreq, List<String> cmptor, int n) {
         Node parent = Child;
         Node now = Child.GetLeftChild();
+
         for (String s : lsFreq) {
             if (now == null) {
                 Node buf = new Node(s, n);
                 parent.SetLeftChild(buf);
                 AddHashTable(cmptor.indexOf(s), buf);
+                AddSupportCount(cmptor.indexOf(s), n);
                 parent = buf;
                 now = buf.GetLeftChild();
             } else {
@@ -27,6 +32,7 @@ public class FP_Tree {
                     buf.SetRightSibling(now);
                     parent.SetLeftChild(buf);
                     AddHashTable(cmptor.indexOf(s), buf);
+                    AddSupportCount(cmptor.indexOf(s), n);
                     parent = buf;
                     now = buf.GetLeftChild();
                 } else {
@@ -41,6 +47,7 @@ public class FP_Tree {
                     } else if (now.GetRightSibling() == null) {
                         Node buf = new Node(s, n);
                         AddHashTable(cmptor.indexOf(s), buf);
+                        AddSupportCount(cmptor.indexOf(s), n);
                         now.SetRightSibling(buf);
                         parent = buf;
                         now = buf.GetLeftChild();
@@ -49,6 +56,7 @@ public class FP_Tree {
                         buf.SetRightSibling(now.GetRightSibling());
                         now.SetRightSibling(buf);
                         AddHashTable(cmptor.indexOf(s), buf);
+                        AddSupportCount(cmptor.indexOf(s), n);
                         parent = buf;
                         now = buf.GetLeftChild();
                     }
@@ -58,7 +66,6 @@ public class FP_Tree {
     }
 
     public void AddHashTable(int index, Node FPTNode) {
-        String product = FPTNode.GetProduct();
         Node now = HT.get(index);
 
         if (now == null) {
@@ -73,16 +80,27 @@ public class FP_Tree {
         now.SetNext(FPTNode);
     }
 
+    public void AddSupportCount(int index, int n) {
+        supportCount.add(index, supportCount.get(index) + n);
+    }
+
     public void Print_FPTree() {
         Child.PrintNode(Child, 0);
     }
 
+    public void Print_SupportCount() {
+        for (int i = 0; i < supportCount.size(); i++) {
+            if(HT.get(i) != null)
+                System.out.printf("%s : %d\n", HT.get(i).GetProduct(), supportCount.get(i));
+        }
+    }
 
     // Constructor
     FP_Tree() {
         Child = new Node();
         find = null; // Unused
         HT = null;
+        supportCount = null;
     }
 
     // Basic
@@ -94,6 +112,10 @@ public class FP_Tree {
         HT = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             HT.add(null);
+        }
+        supportCount = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            supportCount.add(0);
         }
     }
 

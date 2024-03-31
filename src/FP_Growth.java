@@ -136,16 +136,13 @@ public class FP_Growth {
                 System.out.printf("%s : %s - %d\n", bufs, Tbuf, buf.get(bufs)); // Erase
                 Tbuf.sort(new FreqComparator(FP_List));
 
-                //For debugging
-                if(Objects.equals(s, "rolls/buns") && Tbuf.contains("other vegetables")) {
-                    System.out.println("rolls/buns : " + Tbuf);
-                    System.out.println(FP_List);
-                }
-                //For debugging
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
 
             FPT.Print_FPTree(); // Erase it
+
+            System.out.println("Support Count\n\n");
+            FPT.Print_SupportCount(); // Erase it
 
             InsertFreqSet(s, "", FPT.GetChild().GetLeftChild());
         }
