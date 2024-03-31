@@ -83,14 +83,13 @@ public class FP_Tree {
         return sum;
     }
 
-    //Prude Node
-
+    /*
     public void Print_ItemMap() {
         for (String s : itemMap.keySet()) {
             System.out.printf("%s : %d\n", s, itemMap.get(s));
         }
     }
-
+*/
     public void Print_FPTree() {
         Child.PrintNode(Child, 0);
     }
@@ -112,10 +111,6 @@ public class FP_Tree {
         for (int i = 0; i < n; i++) {
             HT.add(null);
         }
-    }
-
-    public List<Node> GetHT() {
-        return HT;
     }
 
     public HashMap<String, Integer> GetItemMap() {

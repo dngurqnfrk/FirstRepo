@@ -1,7 +1,7 @@
 public class Node {
     private Node leftChild;
     private Node rightSibling;
-    private String product;
+    private final String product;
     private Integer count;
     private Node next;
 
