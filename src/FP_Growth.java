@@ -60,12 +60,7 @@ public class FP_Growth {
 
         FP_List = new ArrayList<>(FreqList.keySet());
 
-        FP_List.sort(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return FreqList.get(o2).compareTo(FreqList.get(o1));
-            }
-        });
+        FP_List.sort((o1, o2) -> FreqList.get(o2).compareTo(FreqList.get(o1)));
 
         System.out.println(FreqList); // Erase
 
@@ -89,17 +84,8 @@ public class FP_Growth {
                 }
             }
 
-            //if(i == 11) // Erase
-              //  System.out.println(lsFreq); // Erase
-
             if(!lsFreq.isEmpty())
                 root.InsertNode(lsFreq, FP_List, 1);
-
-            //System.out.println(i); // Erase
-            //Print_FPTree(); // Erase
-
-            //System.out.println(); // Erase
-           // i++; // Erase
         }
     }
 
@@ -116,39 +102,64 @@ public class FP_Growth {
     // In this method, using other 2 methods
     // 1. FormCPB(String, String, Node, HashMap<>) : by scanning FP_Tree, collect Prefix path(conditional pattern base) of aim item.
     // 2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
-    public void MineFPTree() {
-        for (String s : FP_List) {
-            System.out.println("For item : " + s); // Erase
+    public void MineFPTree(FP_Tree tree, List<String> itemList, String freqItemSet) {
+        if(tree.GetChild() == null || itemList.isEmpty())
+        {
+            System.out.println("End of Mining");
+            return;
+        }
 
+        for (String s : itemList) {
             HashMap<String, Integer> buf = new HashMap<>();
 
             // Construct Conditional Pattern Base
-            FormCPB(s, "", root.GetChild().GetLeftChild(), buf);
+            FormCPB(s, "", tree.GetChild().GetLeftChild(), buf);
 
             // Conditional Pattern Tree
             FP_Tree FPT = new FP_Tree();
-            FPT.Construct_HT(FP_List.size());
+            FPT.Construct_HT(itemList.size());
 
             // Construct conditional FP Tree
+            List<String> _ItemList = new ArrayList<>();
             for (String bufs : buf.keySet()) {
                 List<String> Tbuf = new ArrayList<>(List.of(bufs.split(",")));
                 Tbuf.remove("");
-                System.out.printf("%s : %s - %d\n", bufs, Tbuf, buf.get(bufs)); // Erase
                 Tbuf.sort(new FreqComparator(FP_List));
 
+                for (String string : Tbuf) {
+                    if(!_ItemList.contains(string))
+                        _ItemList.add(string);
+                }
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
 
-            FPT.Print_FPTree(); // Erase it
+            _ItemList.sort(new FreqComparator(FP_List));
+            // It's ok until now.
 
-            System.out.println("Support Count\n\n");
-            FPT.Print_SupportCount(); // Erase it
+            for (String item : _ItemList) {
+                if(FPT.GetItemMap().get(item) > threshold) {
+                    if(List.of(freqItemSet.split(",")).contains(item))
+                        continue;
+                    String FIS;
+                    if(freqItemSet.isEmpty())
+                        FIS = item + ", " + s;
+                    else
+                        FIS = freqItemSet + ", " + item + ", " + s;
 
-            InsertFreqSet(s, "", FPT.GetChild().GetLeftChild());
+                    FreqList.put(FIS, FPT.GetCount(FP_List.indexOf(item)));
+                    FPT.Print_FPTree();
+                    System.out.printf("MineFPTree is called with [s]:%s in [item]%s\nFIS is %s\n", s, item, FIS);
+                    if(FPT.GetItemMap().size() > 1)
+                        MineFPTree(FPT, _ItemList, FIS);
+                }
+            }
+            //FPT.Print_FPTree(); // Erase
+            //FPT.Print_ItemMap(); //Erase
         }
     }
 
     // Just for debugging
+        /*
     public void CheckFormCPB() {
         System.out.println("Threshold is " + threshold);
         HashMap<String, Integer> buf = new HashMap<>();
@@ -161,7 +172,7 @@ public class FP_Growth {
             System.out.printf("%s\n-- %d", s, buf.get(s));
         }
     }
-
+     */
 
     public void FormCPB(String aim, String CPB, Node now, HashMap<String, Integer> CPBMap) {
         if(now == null) return;
@@ -177,22 +188,6 @@ public class FP_Growth {
         else if(now.GetLeftChild() != null && CPB.isEmpty()) FormCPB(aim, now.GetProduct(), now.GetLeftChild(), CPBMap);
 
         if(now.GetRightSibling() != null) FormCPB(aim, CPB, now.GetRightSibling(), CPBMap);
-    }
-
-    // Insert itemSet over the support count of threshold.
-    public void InsertFreqSet(String item, String pathSet, Node now) {
-        if(now == null) return;
-
-        if(now.GetCount() >= threshold && !pathSet.isEmpty()) {
-            FreqList.put(pathSet + ", " + now.GetProduct() + ", " + item, now.GetCount());
-        } else if(now.GetCount() >= threshold && pathSet.isEmpty()) {
-            FreqList.put(now.GetProduct() + ", " + item, now.GetCount());
-        }
-
-        if(now.GetLeftChild() != null && !pathSet.isEmpty()) InsertFreqSet(item, pathSet + ", " + now.GetProduct(), now.GetLeftChild());
-        else if(now.GetLeftChild() != null && pathSet.isEmpty()) InsertFreqSet(item, now.GetProduct(), now.GetLeftChild());
-
-        if(now.GetRightSibling() != null) InsertFreqSet(item, pathSet, now.GetLeftChild());
     }
 
     // Print all the Frequent itemSet and its support
@@ -234,5 +229,18 @@ public class FP_Growth {
         file = new CSV(filePath);
         FreqList = new HashMap<>();
         threshold = MSV;
+    }
+
+    // Basic
+    public float GetThreshold() {
+        return threshold;
+    }
+
+    public FP_Tree GetFP_Tree() {
+        return root;
+    }
+
+    public List<String> GetFP_List() {
+        return FP_List;
     }
 }

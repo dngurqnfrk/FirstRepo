@@ -1,16 +1,11 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.HashMap;
+import java.util.*;
 
 
 public class FP_Tree {
-    private Node Child;
+    private final Node Child;
     private Node find; // I'm not sure that  I should use it
     private List<Node> HT;
-    private List<Integer> supportCount;
-    private TreeSet<String> itemSet;
+    private final HashMap<String, Integer> itemMap;
 
     // HT = Header Table
     public void InsertNode(List<String> lsFreq, List<String> cmptor, int n) {
@@ -18,11 +13,11 @@ public class FP_Tree {
         Node now = Child.GetLeftChild();
 
         for (String s : lsFreq) {
+            itemMap.put(s, itemMap.getOrDefault(s, 0) + n);
             if (now == null) {
                 Node buf = new Node(s, n);
                 parent.SetLeftChild(buf);
                 AddHashTable(cmptor.indexOf(s), buf);
-                AddSupportCount(cmptor.indexOf(s), n);
                 parent = buf;
                 now = buf.GetLeftChild();
             } else {
@@ -32,7 +27,6 @@ public class FP_Tree {
                     buf.SetRightSibling(now);
                     parent.SetLeftChild(buf);
                     AddHashTable(cmptor.indexOf(s), buf);
-                    AddSupportCount(cmptor.indexOf(s), n);
                     parent = buf;
                     now = buf.GetLeftChild();
                 } else {
@@ -47,7 +41,6 @@ public class FP_Tree {
                     } else if (now.GetRightSibling() == null) {
                         Node buf = new Node(s, n);
                         AddHashTable(cmptor.indexOf(s), buf);
-                        AddSupportCount(cmptor.indexOf(s), n);
                         now.SetRightSibling(buf);
                         parent = buf;
                         now = buf.GetLeftChild();
@@ -56,7 +49,6 @@ public class FP_Tree {
                         buf.SetRightSibling(now.GetRightSibling());
                         now.SetRightSibling(buf);
                         AddHashTable(cmptor.indexOf(s), buf);
-                        AddSupportCount(cmptor.indexOf(s), n);
                         parent = buf;
                         now = buf.GetLeftChild();
                     }
@@ -69,7 +61,7 @@ public class FP_Tree {
         Node now = HT.get(index);
 
         if (now == null) {
-            HT.set(index, now);
+            HT.set(index, FPTNode);
             return;
         }
 
@@ -80,19 +72,28 @@ public class FP_Tree {
         now.SetNext(FPTNode);
     }
 
-    public void AddSupportCount(int index, int n) {
-        supportCount.add(index, supportCount.get(index) + n);
+    public int GetCount(int index) {
+        Node now = HT.get(index);
+        int sum = 0;
+
+        while(now != null) {
+            sum += now.GetCount();
+            now = now.GetNext();
+        }
+
+        return sum;
+    }
+
+    //Prude Node
+
+    public void Print_ItemMap() {
+        for (String s : itemMap.keySet()) {
+            System.out.printf("%s : %d\n", s, itemMap.get(s));
+        }
     }
 
     public void Print_FPTree() {
         Child.PrintNode(Child, 0);
-    }
-
-    public void Print_SupportCount() {
-        for (int i = 0; i < supportCount.size(); i++) {
-            if(HT.get(i) != null)
-                System.out.printf("%s : %d\n", HT.get(i).GetProduct(), supportCount.get(i));
-        }
     }
 
     // Constructor
@@ -100,7 +101,7 @@ public class FP_Tree {
         Child = new Node();
         find = null; // Unused
         HT = null;
-        supportCount = null;
+        itemMap = new HashMap<>();
     }
 
     // Basic
@@ -113,13 +114,13 @@ public class FP_Tree {
         for (int i = 0; i < n; i++) {
             HT.add(null);
         }
-        supportCount = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-            supportCount.add(0);
-        }
     }
 
     public List<Node> GetHT() {
         return HT;
+    }
+
+    public HashMap<String, Integer> GetItemMap() {
+        return itemMap;
     }
 }

@@ -28,10 +28,12 @@ public class Main {
         System.out.println("Now the Print_FPTree will be started\n\n"); // Erase
         csv.Print_FPTree(); // Erase
 
-        csv.MineFPTree();
+        csv.MineFPTree(csv.GetFP_Tree(), csv.GetFP_List(), "");
 
         System.out.println("Now the Print_Support will be started\n\n"); // Erase
 
         csv.Print_Support();
+
+        System.out.println(csv.GetThreshold()); // Erase
     }
 }

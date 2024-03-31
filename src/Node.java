@@ -23,28 +23,6 @@ public class Node {
             PrintNode(node.rightSibling, depth);
     }
 
-    public void PruneNode(boolean prune, float threshold) {
-        boolean _Prune = prune;
-         if(!_Prune && count < threshold)
-             _Prune = true;
-
-        if(leftChild != null) {
-            leftChild.PruneNode(_Prune, threshold);
-        }
-
-        if(_Prune) {
-            leftChild = null;
-        }
-
-        if(rightSibling != null) {
-            rightSibling.PruneNode(_Prune, threshold);
-        }
-
-        if(_Prune) {
-            rightSibling = null;
-        }
-    }
-
     // Constructor
     Node() {
         leftChild = null;
