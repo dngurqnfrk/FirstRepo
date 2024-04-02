@@ -103,58 +103,92 @@ public class FP_Growth {
     // 1. FormCPB(String, String, Node, HashMap<>) : by scanning FP_Tree, collect Prefix path(conditional pattern base) of aim item.
     // 2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
     public void MineFPTree(FP_Tree tree, List<String> itemList, String freqItemSet) {
-        if(tree.GetChild() == null || itemList.isEmpty())
-        {
+        if (tree.GetChild() == null || itemList.isEmpty()) {
             System.out.println("End of Mining");
             return;
         }
 
         for (String s : itemList) {
+            // 혹시나 해서
+            if (List.of(freqItemSet.split(",")).contains(s))
+                continue;
+
             HashMap<String, Integer> buf = new HashMap<>();
 
-            // Construct Conditional Pattern Base
+            // Construct Conditional Pattern Base (CPB) (CPB is stored in buf)
             FormCPB(s, "", tree.GetChild().GetLeftChild(), buf);
+
+            System.out.println("CPB is below");
+            System.out.println(buf);
 
             // Conditional Pattern Tree
             FP_Tree FPT = new FP_Tree();
             FPT.Construct_HT(itemList.size());
 
-            // Construct conditional FP Tree
+            // new ItemList
             List<String> _ItemList = new ArrayList<>();
+
+            // bufs = CPB
+            // Construct Conditional FP_Tree
             for (String bufs : buf.keySet()) {
                 List<String> Tbuf = new ArrayList<>(List.of(bufs.split(",")));
                 Tbuf.remove("");
+                if(Tbuf.isEmpty()) continue;
                 Tbuf.sort(new FreqComparator(FP_List));
 
                 for (String string : Tbuf) {
-                    if(!_ItemList.contains(string))
+                    if (!_ItemList.contains(string))
                         _ItemList.add(string);
                 }
+
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
+            }
+
+            System.out.printf("FPT is below, [s] : %s\n", s);
+            FPT.Print_FPTree();
+
+            if(FPT.isSingleTree()) {
+                if(!freqItemSet.isEmpty() && FPT.GetCount(FP_List.indexOf(itemList.get(0))) > threshold) {
+                    System.out.println("\nInsert FreqList(by SingleTree) : " + (itemList.get(0) + "," + freqItemSet + ":" + FPT.GetCount(FP_List.indexOf(itemList.get(0)))));
+                    FreqList.put(itemList.get(0) + "," + freqItemSet, FPT.GetCount(FP_List.indexOf(itemList.get(0))));
+                }
+                continue;
             }
 
             _ItemList.sort(new FreqComparator(FP_List));
             // It's ok until now.
 
+            List<String> candidateForFPTree = new ArrayList<>();
             for (String item : _ItemList) {
-                if(FPT.GetItemMap().get(item) > threshold) {
-                    if(List.of(freqItemSet.split(",")).contains(item))
-                        continue;
-                    String FIS;
-                    if(freqItemSet.isEmpty())
-                        FIS = item + ", " + s;
-                    else
-                        FIS = freqItemSet + ", " + item + ", " + s;
-
-                    FreqList.put(FIS, FPT.GetCount(FP_List.indexOf(item)));
-                    FPT.Print_FPTree();
-                    System.out.printf("MineFPTree is called with [s]:%s in [item]%s\nFIS is %s\n", s, item, FIS);
-                    if(FPT.GetItemMap().size() > 1)
-                        MineFPTree(FPT, _ItemList, FIS);
+                if (FPT.GetItemMap().get(item) > threshold && !List.of(freqItemSet.split(",")).contains(item)) {
+                    candidateForFPTree.add(item);
                 }
             }
-            //FPT.Print_FPTree(); // Erase
-            //FPT.Print_ItemMap(); //Erase
+
+            for (String item : candidateForFPTree) {
+                String FIS;
+                if (freqItemSet.isEmpty())
+                    FIS = item + "," + s;
+                else
+                    FIS = item + "," + s + "," + freqItemSet;
+
+                System.out.println("\nInsert FreqList : " + FIS + ":" + FPT.GetCount(FP_List.indexOf(item)));
+                System.out.printf("In [s] : %s in [item] : %s\n\n", s, item);
+
+                FreqList.put(FIS, FPT.GetCount(FP_List.indexOf(item)));
+
+                System.out.println("FPTree is below(in candidate repeat)");
+                FPT.Print_FPTree(); // Erase
+
+                if (FPT.GetItemMap().size() > 1) {
+                    System.out.printf("MineFPTree is called with [s]:%s in [item]%s\nFIS is %s\n", s, item, FIS);
+
+                    List<String> bufList = new ArrayList<>(_ItemList);
+                    bufList.remove(item);
+                    bufList.sort(new FreqComparator(FP_List));
+                    MineFPTree(FPT, bufList, FIS);
+                }
+            }
         }
     }
 
@@ -220,6 +254,30 @@ public class FP_Growth {
         System.out.printf("\nThe number of Object is %d\n\n", objectNumber);
         System.out.println("FP List is below");
         System.out.println(FP_List);
+    }
+
+    // Just for debugging
+    public void Print_item_Count(String[] aimItemArr) {
+        file.Reload(filePath);
+
+        int aimItemCount = 0;
+
+        String buf;
+
+        while((buf = file.readLine()) != null) {
+            String[] goods = buf.split(",");
+            boolean OutWhile = false;
+            for (String aimItem  : aimItemArr) {
+                if(!List.of(goods).contains(aimItem)) {
+                    OutWhile = true;
+                    break;
+                }
+            }
+            if(!OutWhile)
+                aimItemCount++;
+        }
+
+        System.out.printf("The aim Item you want [ %s ] : %d\n\n", Arrays.toString(aimItemArr), aimItemCount);
     }
 
     // Constructor

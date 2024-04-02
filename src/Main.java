@@ -1,4 +1,4 @@
-
+import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         /*
@@ -35,5 +35,18 @@ public class Main {
         csv.Print_Support();
 
         System.out.println(csv.GetThreshold()); // Erase
+
+        Scanner sc = new Scanner(System.in);
+
+        while(true) {
+            System.out.println("If you want to know the count, plz input 1, else input 0 : ");
+            String input = sc.nextLine();
+            if(input.equals("0")) {
+                break;
+            }
+            System.out.println("Please input the item you want to know the count");
+            String[] aimItemArr = sc.nextLine().split(",");
+            csv.Print_item_Count(aimItemArr);
+        }
     }
 }

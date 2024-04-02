@@ -83,6 +83,16 @@ public class FP_Tree {
         return sum;
     }
 
+    public boolean isSingleTree() {
+        if(Child.GetLeftChild() == null)
+            return true;
+        Node CandidateNode = Child.GetLeftChild().GetLeftChild();
+        if(CandidateNode != null && CandidateNode.GetRightSibling() == null && CandidateNode.GetLeftChild() == null)
+            return true;
+        else
+            return false;
+    }
+
     /*
     public void Print_ItemMap() {
         for (String s : itemMap.keySet()) {
