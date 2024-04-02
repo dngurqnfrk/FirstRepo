@@ -72,6 +72,9 @@ public class FP_Tree {
     }
 
     public int GetCount(int index) {
+        if(index >= HT.size())
+            return 0;
+
         Node now = HT.get(index);
         int sum = 0;
 
@@ -83,14 +86,19 @@ public class FP_Tree {
         return sum;
     }
 
+    // Single Tree = have only one branch
     public boolean isSingleTree() {
-        if(Child.GetLeftChild() == null)
-            return true;
-        Node CandidateNode = Child.GetLeftChild().GetLeftChild();
-        if(CandidateNode != null && CandidateNode.GetRightSibling() == null && CandidateNode.GetLeftChild() == null)
-            return true;
-        else
+        Node CandidateNode = Child.GetLeftChild();
+        if(CandidateNode == null)
             return false;
+
+        while(CandidateNode.GetLeftChild() != null) {
+            if(CandidateNode.GetRightSibling() != null) {
+                return false;
+            }
+            CandidateNode = CandidateNode.GetLeftChild();
+        }
+        return CandidateNode.GetRightSibling() == null && CandidateNode.GetLeftChild() == null;
     }
 
     /*
