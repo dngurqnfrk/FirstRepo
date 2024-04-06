@@ -7,6 +7,7 @@ public class Node {
 
 
     // For debugging
+    /*
     public void PrintNode(Node node, int depth) {
         if(node == null)
             return;
@@ -23,6 +24,8 @@ public class Node {
         if(node.rightSibling != null)
             PrintNode(node.rightSibling, depth);
     }
+
+     */
 
     // Constructor
     Node() {
