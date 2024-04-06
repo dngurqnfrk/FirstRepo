@@ -47,17 +47,11 @@ public class FP_Growth {
         while((buf = file.readLine()) != null) {
             String[] goods = buf.split(",");
             for (String s : goods) {
-                if(Objects.equals(s, "f")) {
-                    System.out.println("Yes, it's for f");
-                }
                 if(!FreqList.containsKey(s)) {
                     FreqList.put(s, 1);
                 } else FreqList.replace(s, FreqList.get(s) + 1);
             }
             objectNumber++;
-            System.out.printf("[%d]\n", objectNumber);
-            System.out.println(FreqList);
-            System.out.println(FreqList.get("citrus fruit"));
         }
 
         threshold *= objectNumber;
@@ -68,10 +62,6 @@ public class FP_Growth {
 
         FP_List.sort((o1, o2) -> FreqList.get(o2).compareTo(FreqList.get(o1)));
 
-        System.out.println(FreqList); // Erase
-
-        System.out.println(FP_List); // Erase
-
         root.Construct_HT(FP_List.size());
 
         file.Reload(filePath);
@@ -80,7 +70,6 @@ public class FP_Growth {
     // based on FP_List, scan csv file again to create FP_Tree
     public void Construct_FPTree() {
         String buf;
-        //int i = 0; // Erase
         while((buf = file.readLine()) != null) {
             HashSet<String> goods = new HashSet<>(List.of(buf.split(",")));
             List<String> lsFreq = new ArrayList<>();
@@ -95,14 +84,6 @@ public class FP_Growth {
         }
     }
 
-    // Just for debugging
-    public void Print_FPList() {
-        int i = 0;
-        for (String s : FP_List) {
-            System.out.printf("[%d] : %s\n", i, s);
-            i++;
-        }
-    }
 
     // Mine FPTree and get the frequent itemsSet.
     // In this method, using other 2 methods
@@ -110,17 +91,10 @@ public class FP_Growth {
     // 2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
     public void MineFPTree(FP_Tree tree, List<String> itemList, String freqItemSet) {
 
-        if (tree.GetChild() == null || itemList.isEmpty()) {
-            System.out.println("End of Mining");
+        if (tree.GetChild() == null || itemList.isEmpty())
             return;
-        }
 
         for (String s : itemList) {
-            if(Objects.equals(itemList, FP_List)) {
-                System.out.println("It's for " + s);
-                System.out.println("It's for " + s);
-                System.out.println("It's for " + s);
-            }
             // 혹시나 해서
             if (List.of(freqItemSet.split(",")).contains(s))
                 continue;
@@ -133,8 +107,6 @@ public class FP_Growth {
             // Construct Conditional Pattern Base (CPB) (CPB is stored in buf)
             FormCPB(s, "", tree.GetChild().GetLeftChild(), buf);
 
-            System.out.println("CPB is below, [FIS, s] : " + freqItemSet + "||" + s);
-            System.out.println(buf);
 
             // Conditional Pattern Tree
             FP_Tree FPT = new FP_Tree();
@@ -159,18 +131,8 @@ public class FP_Growth {
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
 
-            System.out.printf("FPT is below, [s] : %s\n", s);
-            FPT.Print_FPTree();
-            System.out.println("Tree is below, [s] : " + s);
-            tree.Print_FPTree();
-
-            // After, I'll check it's really necessary code.
-
             _ItemList.sort(new FreqComparator(FP_List));
 
-            if(Objects.equals(s, "abrasive cleaner")) {
-                System.out.println("Yes, it's for AC");
-            }
 
             String FIS;
             if (freqItemSet.isEmpty())
@@ -179,42 +141,30 @@ public class FP_Growth {
                 FIS = s + "," + freqItemSet;
             }
 
+
             if (FPT.isSingleTree()) {
                 int[] _ItemCountList = new int[_ItemList.size()];
                 for (int i = 0; i < _ItemList.size(); i++) {
                     _ItemCountList[i] = FPT.GetCount(FP_List.indexOf(_ItemList.get(i)));
                 }
 
-                System.out.println("SingleTree Mine has been started!");
-                System.out.println("FIS is " + FIS);
-                System.out.println("s is " + s);
-                FPT.Print_FPTree();
-                System.out.println("SingleTree Mine has been started! OK?");
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
                 Mine_SingleFPT(_ItemList, _ItemCountList, FIS);
                 continue;
             }
-            // It's ok until now.
 
-            if (!freqItemSet.isEmpty() && !buf.isEmpty()) {
-                System.out.println("\nInsert FreqList : " + (FIS+ ":" + FPT.GetCount(FP_List.indexOf(itemList.get(0)))));
+            if (!freqItemSet.isEmpty() && !buf.isEmpty())
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
-            }
 
             MineFPTree(FPT, _ItemList, FIS);
 
-            if(buf.isEmpty()) {
-                System.out.println("Yes buf is Empty!");
-                System.out.printf("[s] : %s, [FIS] : %s\n", s, FIS);
-                System.out.println("\nInsert FreqList(buf.emp) : " + (FIS+ ":" + tree.GetCount(FP_List.indexOf(s))));
+            if(buf.isEmpty())
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
-            }
         }
     }
 
     void Mine_SingleFPT(List<String> itemList, int[] itemCountList, String freqItemSet) {
         if(itemList.isEmpty()) {
-            System.out.println("End of Mining");
             return;
         }
 
@@ -241,30 +191,13 @@ public class FP_Growth {
             else {
                 FIS = item + "," + freqItemSet;
                 FreqList.put(FIS, itemCountList[itemList.indexOf(item)] );
-                System.out.println("Insert FreqList(in SingleTree) : " + ("[" + item + "] ") + (FIS + ":" + itemCountList[itemList.indexOf(item)]));
                 Mine_SingleFPT(_ItemList, _ItemCountList, FIS);
             }
         }
     }
 
 
-
-    // Just for debugging
-        /*
-    public void CheckFormCPB() {
-        System.out.println("Threshold is " + threshold);
-        HashMap<String, Integer> buf = new HashMap<>();
-        for (String s : FP_List) {
-            FormCPB(s, "", root.GetChild().GetLeftChild(), buf);
-            System.out.println(buf);
-        }
-
-        for (String s : buf.keySet()) {
-            System.out.printf("%s\n-- %d", s, buf.get(s));
-        }
-    }
-     */
-
+    // Construct Conditional Pattern Base (CPB)
     public void FormCPB(String aim, String CPB, Node now, HashMap<String, Integer> CPBMap) {
         if(now == null) return;
 
@@ -294,60 +227,6 @@ public class FP_Growth {
         }
     }
 
-    public void PracPrint_Support() {
-        PriorityQueue<Map.Entry<String, Integer>> bufPQ = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
-
-        bufPQ.addAll(FreqList.entrySet());
-
-        while(!bufPQ.isEmpty()) {
-            Map.Entry<String, Integer> buf = bufPQ.remove();
-
-            System.out.println(buf.getKey() + " " + buf.getValue());
-        }
-    }
-
-    // Just for debugging
-    public void Print_FPTree() {
-        root.GetChild().PrintNode(root.GetChild(), 0);
-    }
-
-    //Just for debugging
-    void Print_HashMap()
-    {
-        int i = 0;
-        for (String s : FreqList.keySet()) {
-            System.out.printf("[%d] : %s = %d\n", i, s, FreqList.get(s));
-            i++;
-        }
-
-        System.out.printf("\nThe number of Object is %d\n\n", objectNumber);
-        System.out.println("FP List is below");
-        System.out.println(FP_List);
-    }
-
-    // Just for debugging
-    public void Print_item_Count(String[] aimItemArr) {
-        file.Reload(filePath);
-
-        int aimItemCount = 0;
-
-        String buf;
-
-        while((buf = file.readLine()) != null) {
-            String[] goods = buf.split(",");
-            boolean OutWhile = false;
-            for (String aimItem  : aimItemArr) {
-                if(!List.of(goods).contains(aimItem)) {
-                    OutWhile = true;
-                    break;
-                }
-            }
-            if(!OutWhile)
-                aimItemCount++;
-        }
-
-        System.out.printf("The aim Item you want [ %s ] : %d\n\n", Arrays.toString(aimItemArr), aimItemCount);
-    }
 
     // Constructor
     FP_Growth(String _filePath, float MSV) {
@@ -359,10 +238,6 @@ public class FP_Growth {
     }
 
     // Basic
-    public float GetThreshold() {
-        return threshold;
-    }
-
     public FP_Tree GetFP_Tree() {
         return root;
     }

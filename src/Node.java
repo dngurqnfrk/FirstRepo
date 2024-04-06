@@ -6,6 +6,7 @@ public class Node {
     private Node next;
 
 
+    // For debugging
     public void PrintNode(Node node, int depth) {
         if(node == null)
             return;

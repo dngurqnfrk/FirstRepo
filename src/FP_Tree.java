@@ -4,7 +4,6 @@ import java.util.*;
 public class FP_Tree {
     private final Node Child;
     private List<Node> HT;
-    private final HashMap<String, Integer> itemMap;
 
     // HT = Header Table
     public void InsertNode(List<String> lsFreq, List<String> cmptor, int n) {
@@ -12,7 +11,6 @@ public class FP_Tree {
         Node now = Child.GetLeftChild();
 
         for (String s : lsFreq) {
-            itemMap.put(s, itemMap.getOrDefault(s, 0) + n);
             if (now == null) {
                 Node buf = new Node(s, n);
                 parent.SetLeftChild(buf);
@@ -92,22 +90,11 @@ public class FP_Tree {
         return CandidateNode.GetRightSibling() == null && CandidateNode.GetLeftChild() == null;
     }
 
-    /*
-    public void Print_ItemMap() {
-        for (String s : itemMap.keySet()) {
-            System.out.printf("%s : %d\n", s, itemMap.get(s));
-        }
-    }
-*/
-    public void Print_FPTree() {
-        Child.PrintNode(Child, 0);
-    }
 
     // Constructor
     FP_Tree() {
         Child = new Node();
         HT = null;
-        itemMap = new HashMap<>();
     }
 
     // Basic
@@ -120,9 +107,5 @@ public class FP_Tree {
         for (int i = 0; i < n; i++) {
             HT.add(null);
         }
-    }
-
-    public HashMap<String, Integer> GetItemMap() {
-        return itemMap;
     }
 }
