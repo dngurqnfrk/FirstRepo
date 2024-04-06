@@ -32,7 +32,7 @@ public class Main {
 
         System.out.println("Now the Print_Support will be started\n\n"); // Erase
 
-        csv.Print_Support();
+        csv.PracPrint_Support();
 
         System.out.println(csv.GetThreshold()); // Erase
 

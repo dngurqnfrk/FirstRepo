@@ -5,7 +5,7 @@ public class FP_Growth {
     // We memorize frequent itemSet in FreqList
     private List<String> FP_List; // the Order of Frequent item
     private int objectNumber; // the whole number of Object
-    private float threshold; // if itemset is frequent, support count must be over threshold
+    private float threshold; // if itemSet is frequent, support count must be over threshold
     final private CSV file; // using CSV Class, we open groceries.csv file
     private final FP_Tree root; // root node of FP_Tree, we use FP_Tree class
     private final String filePath; // the filepath of groceries.csv
@@ -47,16 +47,22 @@ public class FP_Growth {
         while((buf = file.readLine()) != null) {
             String[] goods = buf.split(",");
             for (String s : goods) {
+                if(Objects.equals(s, "f")) {
+                    System.out.println("Yes, it's for f");
+                }
                 if(!FreqList.containsKey(s)) {
                     FreqList.put(s, 1);
                 } else FreqList.replace(s, FreqList.get(s) + 1);
             }
             objectNumber++;
+            System.out.printf("[%d]\n", objectNumber);
+            System.out.println(FreqList);
+            System.out.println(FreqList.get("citrus fruit"));
         }
 
         threshold *= objectNumber;
 
-        FreqList.keySet().removeIf(s -> FreqList.get(s) <= threshold);
+        FreqList.keySet().removeIf(s -> FreqList.get(s) < threshold);
 
         FP_List = new ArrayList<>(FreqList.keySet());
 
@@ -127,7 +133,7 @@ public class FP_Growth {
             // Construct Conditional Pattern Base (CPB) (CPB is stored in buf)
             FormCPB(s, "", tree.GetChild().GetLeftChild(), buf);
 
-            System.out.println("CPB is below, [s] : " + s);
+            System.out.println("CPB is below, [FIS, s] : " + freqItemSet + "||" + s);
             System.out.println(buf);
 
             // Conditional Pattern Tree
@@ -155,32 +161,54 @@ public class FP_Growth {
 
             System.out.printf("FPT is below, [s] : %s\n", s);
             FPT.Print_FPTree();
+            System.out.println("Tree is below, [s] : " + s);
+            tree.Print_FPTree();
 
             // After, I'll check it's really necessary code.
 
             _ItemList.sort(new FreqComparator(FP_List));
 
-            if (FPT.isSingleTree()) {
-                int[] _ItemCountList = new int[_ItemList.size()];
-                for (int i = 0; i < _ItemList.size(); i++) {
-                    _ItemCountList[i] = tree.GetCount(FP_List.indexOf(_ItemList.get(i)));
-                }
-
-                Mine_SingleFPT(_ItemList, _ItemCountList, freqItemSet);
-                continue;
+            if(Objects.equals(s, "abrasive cleaner")) {
+                System.out.println("Yes, it's for AC");
             }
-            // It's ok until now.
 
             String FIS;
             if (freqItemSet.isEmpty())
                 FIS = s;
             else {
                 FIS = s + "," + freqItemSet;
+            }
+
+            if (FPT.isSingleTree()) {
+                int[] _ItemCountList = new int[_ItemList.size()];
+                for (int i = 0; i < _ItemList.size(); i++) {
+                    _ItemCountList[i] = FPT.GetCount(FP_List.indexOf(_ItemList.get(i)));
+                }
+
+                System.out.println("SingleTree Mine has been started!");
+                System.out.println("FIS is " + FIS);
+                System.out.println("s is " + s);
+                FPT.Print_FPTree();
+                System.out.println("SingleTree Mine has been started! OK?");
+                FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
+                Mine_SingleFPT(_ItemList, _ItemCountList, FIS);
+                continue;
+            }
+            // It's ok until now.
+
+            if (!freqItemSet.isEmpty() && !buf.isEmpty()) {
                 System.out.println("\nInsert FreqList : " + (FIS+ ":" + FPT.GetCount(FP_List.indexOf(itemList.get(0)))));
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
             }
+
             MineFPTree(FPT, _ItemList, FIS);
 
+            if(buf.isEmpty()) {
+                System.out.println("Yes buf is Empty!");
+                System.out.printf("[s] : %s, [FIS] : %s\n", s, FIS);
+                System.out.println("\nInsert FreqList(buf.emp) : " + (FIS+ ":" + tree.GetCount(FP_List.indexOf(s))));
+                FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
+            }
         }
     }
 
@@ -196,11 +224,13 @@ public class FP_Growth {
 
             for(int i = 0; i < itemList.indexOf(item); i++) {
                 _ItemList.add(itemList.get(i));
-                _ItemCountList[i] = itemCountList[i];
+                _ItemCountList[i] = itemCountList[itemList.indexOf(item)];
             }
 
-            if(itemCountList[itemList.indexOf(item)] < threshold)
+            if(itemCountList[itemList.indexOf(item)] < threshold) {
                 Mine_SingleFPT(_ItemList, _ItemCountList, freqItemSet);
+                continue;
+            }
 
             String FIS;
 
@@ -211,6 +241,7 @@ public class FP_Growth {
             else {
                 FIS = item + "," + freqItemSet;
                 FreqList.put(FIS, itemCountList[itemList.indexOf(item)] );
+                System.out.println("Insert FreqList(in SingleTree) : " + ("[" + item + "] ") + (FIS + ":" + itemCountList[itemList.indexOf(item)]));
                 Mine_SingleFPT(_ItemList, _ItemCountList, FIS);
             }
         }
@@ -260,6 +291,18 @@ public class FP_Growth {
             Map.Entry<String, Integer> buf = bufPQ.remove();
 
             System.out.println(buf.getKey() + " " + (float)buf.getValue() / objectNumber);
+        }
+    }
+
+    public void PracPrint_Support() {
+        PriorityQueue<Map.Entry<String, Integer>> bufPQ = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
+
+        bufPQ.addAll(FreqList.entrySet());
+
+        while(!bufPQ.isEmpty()) {
+            Map.Entry<String, Integer> buf = bufPQ.remove();
+
+            System.out.println(buf.getKey() + " " + buf.getValue());
         }
     }
 
