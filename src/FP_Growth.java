@@ -241,6 +241,21 @@ public class FP_Growth {
         }
     }
 
+    public void Debug_Print_Support() {
+        System.out.println("It is Debugging Print!\n\n");
+        PriorityQueue<Map.Entry<String, Integer>> bufPQ = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
+
+        bufPQ.addAll(FreqList.entrySet());
+
+        while(!bufPQ.isEmpty()) {
+            Map.Entry<String, Integer> buf = bufPQ.remove();
+
+            System.out.println(buf.getKey() + " " + buf.getValue());
+        }
+
+        System.out.println("Object Num : " + objectNumber);
+    }
+
 
 
     // Just for debugging
