@@ -84,10 +84,14 @@ public class FP_Tree {
     public boolean isSingleTree() {
         if(Child.GetLeftChild() == null)
             return false;
-        Node CandidateNode = Child.GetLeftChild().GetLeftChild();
-        if(CandidateNode == null)
-            return true;
-        return CandidateNode.GetRightSibling() == null && CandidateNode.GetLeftChild() == null;
+        Node CandidateNode = Child.GetLeftChild();
+        do {
+            if(CandidateNode.GetRightSibling() != null)
+                return false;
+
+            CandidateNode = CandidateNode.GetLeftChild();
+        } while(CandidateNode != null);
+        return true;
     }
 
 
