@@ -1,4 +1,4 @@
-public class Main {
+public class A1_G7_t2 {
     public static void main(String[] args) {
         /*
         v 3.01
