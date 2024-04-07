@@ -84,6 +84,14 @@ public class FP_Growth {
         }
     }
 
+    // Just for debugging
+    public void Print_FPList() {
+        int i = 0;
+        for (String s : FP_List) {
+            System.out.printf("[%d] : %s\n", i, s);
+            i++;
+        }
+    }
 
     // Mine FPTree and get the frequent itemsSet.
     // In this method, using other 2 methods
@@ -91,8 +99,9 @@ public class FP_Growth {
     // 2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
     public void MineFPTree(FP_Tree tree, List<String> itemList, String freqItemSet) {
 
-        if (tree.GetChild() == null || itemList.isEmpty())
+        if (tree.GetChild() == null || itemList.isEmpty()) {
             return;
+        }
 
         for (String s : itemList) {
             // 혹시나 해서
@@ -110,7 +119,7 @@ public class FP_Growth {
 
             // Conditional Pattern Tree
             FP_Tree FPT = new FP_Tree();
-            FPT.Construct_HT(itemList.size());
+            FPT.Construct_HT(FP_List.size());
 
             // new ItemList
             List<String> _ItemList = new ArrayList<>();
@@ -131,6 +140,9 @@ public class FP_Growth {
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
 
+
+            // After, I'll check it's really necessary code.
+
             _ItemList.sort(new FreqComparator(FP_List));
 
 
@@ -141,25 +153,28 @@ public class FP_Growth {
                 FIS = s + "," + freqItemSet;
             }
 
-
             if (FPT.isSingleTree()) {
                 int[] _ItemCountList = new int[_ItemList.size()];
                 for (int i = 0; i < _ItemList.size(); i++) {
                     _ItemCountList[i] = FPT.GetCount(FP_List.indexOf(_ItemList.get(i)));
                 }
 
+
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
                 Mine_SingleFPT(_ItemList, _ItemCountList, FIS);
                 continue;
             }
+            // It's ok until now.
 
-            if (!freqItemSet.isEmpty() && !buf.isEmpty())
+            if (!freqItemSet.isEmpty() && !buf.isEmpty()) {
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
+            }
 
             MineFPTree(FPT, _ItemList, FIS);
 
-            if(buf.isEmpty())
+            if(buf.isEmpty()) {
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
+            }
         }
     }
 
@@ -197,7 +212,6 @@ public class FP_Growth {
     }
 
 
-    // Construct Conditional Pattern Base (CPB)
     public void FormCPB(String aim, String CPB, Node now, HashMap<String, Integer> CPBMap) {
         if(now == null) return;
 
@@ -228,6 +242,14 @@ public class FP_Growth {
     }
 
 
+
+    // Just for debugging
+    public void Print_FPTree() {
+        root.GetChild().PrintNode(root.GetChild(), 0);
+    }
+
+
+
     // Constructor
     FP_Growth(String _filePath, float MSV) {
         root = new FP_Tree();
@@ -238,6 +260,10 @@ public class FP_Growth {
     }
 
     // Basic
+    public float GetThreshold() {
+        return threshold;
+    }
+
     public FP_Tree GetFP_Tree() {
         return root;
     }

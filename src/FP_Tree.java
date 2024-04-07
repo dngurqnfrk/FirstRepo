@@ -91,6 +91,10 @@ public class FP_Tree {
     }
 
 
+    public void Print_FPTree() {
+        Child.PrintNode(Child, 0);
+    }
+
     // Constructor
     FP_Tree() {
         Child = new Node();
