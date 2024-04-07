@@ -1,7 +1,7 @@
 # FP-Growth for CSE304 Assignment #1
 
 ## Building
-In cmd, plz enter this sentences in project file.
+If you want to run this code in terminal, enter this sentences in project file.
 
 ```
 mkdir out
