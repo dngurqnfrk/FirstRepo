@@ -105,6 +105,14 @@ public class FP_Growth {
 
         for (String s : itemList) {
             // 혹시나 해서
+            /*
+            List<String> debugFreqList = new ArrayList<>(List.of(freqItemSet.split(",")));
+            if(!Objects.equals(s, "12531") && tree.GetDepth() == 0)
+                continue;
+
+             */
+
+
             if (List.of(freqItemSet.split(",")).contains(s))
                 continue;
 
@@ -114,17 +122,17 @@ public class FP_Growth {
             HashMap<String, Integer> buf = new HashMap<>();
 
             // Construct Conditional Pattern Base (CPB) (CPB is stored in buf)
-            FormCPB(s, "", tree.GetChild().GetLeftChild(), buf);
+            FormCPB(s, tree, buf);
 
 
             // Conditional Pattern Tree
-            FP_Tree FPT = new FP_Tree();
+            FP_Tree FPT = new FP_Tree(tree.GetDepth() + 1);
             FPT.Construct_HT(FP_List.size());
 
             // new ItemList
             List<String> _ItemList = new ArrayList<>();
 
-            // bufs = CPB
+            // bufs = a pattern of CPB
             // Construct Conditional FP_Tree
             for (String bufs : buf.keySet()) {
                 List<String> Tbuf = new ArrayList<>(List.of(bufs.split(",")));
@@ -139,9 +147,6 @@ public class FP_Growth {
 
                 FPT.InsertNode(Tbuf, FP_List, buf.get(bufs));
             }
-
-
-            // After, I'll check it's really necessary code.
 
             _ItemList.sort(new FreqComparator(FP_List));
 
@@ -212,20 +217,25 @@ public class FP_Growth {
     }
 
 
-    public void FormCPB(String aim, String CPB, Node now, HashMap<String, Integer> CPBMap) {
+    public void FormCPB(String aim, FP_Tree tree, HashMap<String, Integer> CPBMap) {
+        Node now = tree.GetChild().GetLeftChild();
         if(now == null) return;
 
-        if(Objects.equals(now.GetProduct(), aim) && !CPB.isEmpty()) {
-            CPBMap.put(CPB, now.GetCount());
-            return;
-        } else if(Objects.equals(now.GetProduct(), aim) && CPB.isEmpty()) {
-            return;
+        now = tree.GetItemNode(FP_List.indexOf(aim));
+        while(now != null) {
+            Node buf = now.GetParent();
+            if(buf == null) {
+                now = now.GetNext();
+                continue;
+            }
+            String bufStr = buf.GetProduct();
+            while(buf != null) {
+                buf = buf.GetParent();
+                bufStr = buf.GetProduct() + "," + bufStr;
+            }
+            CPBMap.put(bufStr, CPBMap.getOrDefault(bufStr, 0) + now.GetCount());
+            now = now.GetNext();
         }
-
-        if(now.GetLeftChild() != null && !CPB.isEmpty()) FormCPB(aim, CPB + "," + now.GetProduct(), now.GetLeftChild(), CPBMap);
-        else if(now.GetLeftChild() != null && CPB.isEmpty()) FormCPB(aim, now.GetProduct(), now.GetLeftChild(), CPBMap);
-
-        if(now.GetRightSibling() != null) FormCPB(aim, CPB, now.GetRightSibling(), CPBMap);
     }
 
     // Print all the Frequent itemSet and its support
@@ -241,6 +251,7 @@ public class FP_Growth {
         }
     }
 
+
     public void Debug_Print_Support() {
         System.out.println("It is Debugging Print!\n\n");
         PriorityQueue<Map.Entry<String, Integer>> bufPQ = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
@@ -253,7 +264,10 @@ public class FP_Growth {
             System.out.println(buf.getKey() + " " + buf.getValue());
         }
 
-        System.out.println("Object Num : " + objectNumber);
+        System.out.println("\n\nObject Num : " + objectNumber);
+        System.out.println("Threshold : " + threshold);
+
+        System.out.println("\n\n Get ,12531 : " + FreqList.get(",12531"));
     }
 
 
@@ -267,7 +281,7 @@ public class FP_Growth {
 
     // Constructor
     FP_Growth(String _filePath, float MSV) {
-        root = new FP_Tree();
+        root = new FP_Tree(0);
         filePath = _filePath;
         file = new CSV(filePath);
         FreqList = new HashMap<>();

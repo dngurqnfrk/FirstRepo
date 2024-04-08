@@ -4,6 +4,7 @@ public class Node {
     private final String product;
     private Integer count;
     private Node next;
+    private Node parent;
 
 
     public void PrintNode(Node node, int depth) {
@@ -30,6 +31,7 @@ public class Node {
         product = null;
         count = 0;
         next = null;
+        parent = null;
     }
 
     Node(String p, int n) {
@@ -38,6 +40,7 @@ public class Node {
         product = p;
         count = n;
         next = null;
+        parent = null;
     }
 
 
@@ -55,4 +58,6 @@ public class Node {
         next = n;
     }
     Node GetNext() { return next; }
+    void SetParent(Node p) { parent = p; }
+    Node GetParent() { return parent; }
 }
