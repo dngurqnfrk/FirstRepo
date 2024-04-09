@@ -121,6 +121,8 @@ public class FP_Growth {
 
             HashMap<String, Integer> buf = new HashMap<>();
 
+            //tree.Print_FPTree(); // Erase
+
             // Construct Conditional Pattern Base (CPB) (CPB is stored in buf)
             FormCPB(s, tree, buf);
 
@@ -131,6 +133,9 @@ public class FP_Growth {
 
             // new ItemList
             List<String> _ItemList = new ArrayList<>();
+
+            // Erase
+            //System.out.println(buf);
 
             // bufs = a pattern of CPB
             // Construct Conditional FP_Tree
@@ -216,24 +221,27 @@ public class FP_Growth {
         }
     }
 
-
+//Problem
     public void FormCPB(String aim, FP_Tree tree, HashMap<String, Integer> CPBMap) {
         Node now = tree.GetChild().GetLeftChild();
         if(now == null) return;
 
         now = tree.GetItemNode(FP_List.indexOf(aim));
+        //System.out.println(now.GetProduct()); // Erase
         while(now != null) {
             Node buf = now.GetParent();
-            if(buf == null) {
+            //System.out.println(buf.GetProduct()); // Erase
+            if(buf.GetProduct() == null) {
                 now = now.GetNext();
                 continue;
             }
             String bufStr = buf.GetProduct();
-            while(buf != null) {
+            while(buf.GetParent() != null && !(buf.GetParent().GetProduct() == null)) {
                 buf = buf.GetParent();
                 bufStr = buf.GetProduct() + "," + bufStr;
             }
-            CPBMap.put(bufStr, CPBMap.getOrDefault(bufStr, 0) + now.GetCount());
+            if(!bufStr.isEmpty())
+                CPBMap.put(bufStr, CPBMap.getOrDefault(bufStr, 0) + now.GetCount());
             now = now.GetNext();
         }
     }
