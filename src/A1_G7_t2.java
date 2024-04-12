@@ -1,13 +1,13 @@
 public class A1_G7_t2 {
     public static void main(String[] args) {
         /*
-        v 3.01
+        v 3.04
          */
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
 
         //argument process
         String filePath = args[0];
-        float MSV = Float.parseFloat(args[1]);
+        double MSV = Double.parseDouble(args[1]);
 
         FP_Growth csv = new FP_Growth(filePath, MSV);
 
@@ -19,9 +19,9 @@ public class A1_G7_t2 {
 
         csv.Print_Support();
 
-        long endTime = System.nanoTime();
+        //long endTime = System.nanoTime();
 
-        long duration = (endTime - startTime);
-        System.out.println("\nExecution Time : " + duration / 1000000 + "ms");
+        //long duration = (endTime - startTime);
+        //System.out.println("\nExecution Time : " + duration / 1000000 + "ms");
     }
 }

@@ -5,7 +5,7 @@ public class FP_Growth {
     // We memorize frequent itemSet in FreqList
     private List<String> FP_List; // the Order of Frequent item
     private int objectNumber; // the whole number of Object
-    private float threshold; // if itemSet is frequent, support count must be over threshold
+    private double threshold; // if itemSet is frequent, support count must be over threshold
     final private CSV file; // using CSV Class, we open groceries.csv file
     private final FP_Tree root; // root node of FP_Tree, we use FP_Tree class
     private final String filePath; // the filepath of groceries.csv
@@ -20,9 +20,9 @@ public class FP_Growth {
     Construct_FPTree() : scan csv file again and create FP_Tree based on FP_List.
 
     Mine_FPTree() : by using FP_List and root(FP_Tree), mining the tree and get frequent itemSet.
-    in this method, using other 2 methods.
-    1. FormCPB(String, String, Node, HashMap<>) : by scanning FP_Tree, collect Prefix path(conditional pattern base) of aim item.
-    2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
+    in this method, using other method.
+    - FormCPB(String, String, Node, HashMap<>) : by scanning FP_Tree, collect Prefix path(conditional pattern base) of aim item.
+    - Mine_SingleFPT : if the itemSet is single, just add the combination of tree to FreqList.
 
     Print_Support() : print FreqList in order. this method is for the assignment.
 
@@ -96,7 +96,7 @@ public class FP_Growth {
     // Mine FPTree and get the frequent itemsSet.
     // In this method, using other 2 methods
     // 1. FormCPB(String, String, Node, HashMap<>) : by scanning FP_Tree, collect Prefix path(conditional pattern base) of aim item.
-    // 2. InsertFreqSet(String, String, Node) : by scanning conditional FP_Tree, find frequent itemSet.
+    // 2. Mine_SingleFPT : if the itemSet is single, just add the combination of tree to FreqList.
     public void MineFPTree(FP_Tree tree, List<String> itemList, String freqItemSet) {
 
         if (tree.GetChild() == null || itemList.isEmpty()) {
@@ -104,14 +104,6 @@ public class FP_Growth {
         }
 
         for (String s : itemList) {
-            // 혹시나 해서
-            /*
-            List<String> debugFreqList = new ArrayList<>(List.of(freqItemSet.split(",")));
-            if(!Objects.equals(s, "12531") && tree.GetDepth() == 0)
-                continue;
-
-             */
-
 
             if (List.of(freqItemSet.split(",")).contains(s))
                 continue;
@@ -120,8 +112,6 @@ public class FP_Growth {
                 continue;
 
             HashMap<String, Integer> buf = new HashMap<>();
-
-            //tree.Print_FPTree(); // Erase
 
             // Construct Conditional Pattern Base (CPB) (CPB is stored in buf)
             FormCPB(s, tree, buf);
@@ -174,7 +164,6 @@ public class FP_Growth {
                 Mine_SingleFPT(_ItemList, _ItemCountList, FIS);
                 continue;
             }
-            // It's ok until now.
 
             if (!freqItemSet.isEmpty() && !buf.isEmpty()) {
                 FreqList.put(FIS, tree.GetCount(FP_List.indexOf(s)));
@@ -188,6 +177,7 @@ public class FP_Growth {
         }
     }
 
+    // Mine Single FPT
     void Mine_SingleFPT(List<String> itemList, int[] itemCountList, String freqItemSet) {
         if(itemList.isEmpty()) {
             return;
@@ -221,7 +211,7 @@ public class FP_Growth {
         }
     }
 
-//Problem
+    // Collecting Prefix Path
     public void FormCPB(String aim, FP_Tree tree, HashMap<String, Integer> CPBMap) {
         Node now = tree.GetChild().GetLeftChild();
         if(now == null) return;
@@ -255,11 +245,11 @@ public class FP_Growth {
         while(!bufPQ.isEmpty()) {
             Map.Entry<String, Integer> buf = bufPQ.remove();
 
-            System.out.println(buf.getKey() + " " + (float)buf.getValue() / objectNumber);
+            System.out.println(buf.getKey() + " " + (float)buf.getValue() / (float)objectNumber);
         }
     }
 
-
+    // Just for debugging
     public void Debug_Print_Support() {
         System.out.println("It is Debugging Print!\n\n");
         PriorityQueue<Map.Entry<String, Integer>> bufPQ = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
@@ -288,7 +278,7 @@ public class FP_Growth {
 
 
     // Constructor
-    FP_Growth(String _filePath, float MSV) {
+    FP_Growth(String _filePath, double MSV) {
         root = new FP_Tree(0);
         filePath = _filePath;
         file = new CSV(filePath);
@@ -297,7 +287,7 @@ public class FP_Growth {
     }
 
     // Basic
-    public float GetThreshold() {
+    public double GetThreshold() {
         return threshold;
     }
 
