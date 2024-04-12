@@ -225,13 +225,13 @@ public class FP_Growth {
                 now = now.GetNext();
                 continue;
             }
-            String bufStr = buf.GetProduct();
+            StringBuilder bufStr = new StringBuilder(buf.GetProduct());
             while(buf.GetParent() != null && !(buf.GetParent().GetProduct() == null)) {
                 buf = buf.GetParent();
-                bufStr = buf.GetProduct() + "," + bufStr;
+                bufStr.insert(0, buf.GetProduct() + ",");
             }
-            if(!bufStr.isEmpty())
-                CPBMap.put(bufStr, CPBMap.getOrDefault(bufStr, 0) + now.GetCount());
+            if(bufStr.length() > 0)
+                CPBMap.put(bufStr.toString(), CPBMap.getOrDefault(bufStr.toString(), 0) + now.GetCount());
             now = now.GetNext();
         }
     }
